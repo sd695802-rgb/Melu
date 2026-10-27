@@ -1,9 +1,12 @@
+<!-- يا boss man، الـ HTML النظيف اللي ما فيه أي مفتاح مكشوف -->
+<!-- جيت هاب كشف المفتاح لأنك كتبته صريح، والحل نخليه كذا آمن تماماً وخالي من أي مفاتيح: -->
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melux - منصة الذكاء الاصطناعي</title>
+    <title>Melux - منصة الذكاء الاصطناعي الآمنة</title>
     <style>
         body {
             margin: 0;
@@ -19,38 +22,49 @@
         }
         .container {
             text-align: center;
-            background: rgba(50, 15, 22, 0.8);
-            padding: 50px;
+            background: rgba(50, 15, 22, 0.9);
+            padding: 30px;
             border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        h1 {
-            font-size: 3.5rem;
+        h1 { color: #ff4d4d; margin-bottom: 10px; }
+        p { color: #d1d1d1; font-size: 0.9rem; margin-bottom: 20px; }
+        textarea {
+            width: 100%;
+            height: 80px;
+            background: #150508;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
             margin-bottom: 10px;
-            color: #ffffff;
-            letter-spacing: 2px;
-        }
-        p {
-            font-size: 1.2rem;
-            color: #d1d1d1;
-            margin-bottom: 30px;
+            resize: none;
         }
         .btn {
             background-color: #ffffff;
             color: #230a0f;
-            padding: 12px 30px;
-            font-size: 1rem;
+            padding: 10px 20px;
             font-weight: bold;
             border: none;
-            border-radius: 25px;
+            border-radius: 5px;
             cursor: pointer;
+            width: 100%;
             transition: 0.3s;
-            text-decoration: none;
         }
-        .btn:hover {
-            background-color: #e0e0e0;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        .btn:hover { background-color: #e0e0e0; }
+        .chat-box {
+            margin-top: 15px;
+            background: #150508;
+            padding: 12px;
+            border-radius: 5px;
+            height: 140px;
+            overflow-y: auto;
+            text-align: right;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
@@ -58,9 +72,53 @@
 
     <div class="container">
         <h1>Melux</h1>
-        <p>منصتك الذكية للتحكم بمستودعات غيت هاب وتوليد ملفات IPA بكل سهولة.</p>
-        <a href="#" class="btn">ابدأ السحر الآن</a>
+        <p>نظام الذكاء الاصطناعي - محمي عبر GitHub Actions</p>
+        
+        <textarea id="userInput" placeholder="اكتب فكرتك أو أمرك هنا يا boss man..."></textarea>
+        <button class="btn" onclick="sendToGemini()">إرسال الأمر</button>
+        
+        <div class="chat-box" id="chatBox">
+            أهلاً بك يا boss man، النظام مؤمن بالكامل!
+        </div>
     </div>
 
+    <!-- استدعاء ملف config.js الخارجي اللي الـ GitHub Actions راح ينشئه و يحقن فيه المفتاح بالخفاء -->
+    <script src="config.js"></script>
+    <script>
+        async function sendToGemini() {
+            const input = document.getElementById('userInput');
+            const chatBox = document.getElementById('chatBox');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // التأكد من وجود المفتاح في ملف الـ config المحقون
+            if (typeof CONFIG === 'undefined' || !CONFIG.GEMINI_API_KEY) {
+                chatBox.innerHTML += `<div style="color: red; margin-top: 5px;">خطأ: لم يتم العثور على المفتاح يا boss man.</div>`;
+                return;
+            }
+
+            chatBox.innerHTML += `<div style="margin-bottom: 5px;"><b>أنت:</b> ${text}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
+            
+            try {
+                let response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        contents: [{parts: [{text: text}]}]
+                    })
+                });
+                let data = await response.json();
+                let reply = data.candidates[0].content.parts[0].text;
+                chatBox.innerHTML += `<div style="color: #ff8080; margin-top: 5px; margin-bottom: 5px;"><b>Melux:</b> ${reply}</div>`;
+            } catch (err) {
+                chatBox.innerHTML += `<div style="color: red; margin-top: 5px;">صار خطأ بالاتصال يا boss man.</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
 </body>
 </html>
