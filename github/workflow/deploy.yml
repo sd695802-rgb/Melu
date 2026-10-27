@@ -1,0 +1,24 @@
+# أضف هذا الملف في مجلد .github/workflows/deploy.yml يا boss man
+name: Deploy and Secure Melux
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Inject API Key Securely
+      run: |
+        # حقن المفتاح من الـ Secrets المخفية داخل ملف الإعدادات أوتوماتيكياً أثناء الرفع
+        echo "const CONFIG = { GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}' };" > config.js
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
