@@ -1,12 +1,9 @@
-<!-- يا boss man، الـ HTML النظيف اللي ما فيه أي مفتاح مكشوف -->
-<!-- جيت هاب كشف المفتاح لأنك كتبته صريح، والحل نخليه كذا آمن تماماً وخالي من أي مفاتيح: -->
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melux - منصة الذكاء الاصطناعي الآمنة</title>
+    <title>Melux - منصة الذكاء الاصطناعي</title>
     <style>
         body {
             margin: 0;
@@ -72,36 +69,31 @@
 
     <div class="container">
         <h1>Melux</h1>
-        <p>نظام الذكاء الاصطناعي - محمي عبر GitHub Actions</p>
+        <p>نظام الذكاء الاصطناعي السحابي - جاهز ومباشر</p>
         
         <textarea id="userInput" placeholder="اكتب فكرتك أو أمرك هنا يا boss man..."></textarea>
         <button class="btn" onclick="sendToGemini()">إرسال الأمر</button>
         
         <div class="chat-box" id="chatBox">
-            أهلاً بك يا boss man، النظام مؤمن بالكامل!
+            أهلاً بك يا boss man، النظام جاهز ولذيذ!
         </div>
     </div>
 
-    <!-- استدعاء ملف config.js الخارجي اللي الـ GitHub Actions راح ينشئه و يحقن فيه المفتاح بالخفاء -->
-    <script src="config.js"></script>
     <script>
+        // المفتاح محطوط هنا ومربوط بشكل مباشر ونهائي يا boss man
+        const apiKey = "AQ.Ab8RN6KqK1vjD3uS669zi0VsPiIgOSZNyoWZ6hmt__zg3xTXag";
+
         async function sendToGemini() {
             const input = document.getElementById('userInput');
             const chatBox = document.getElementById('chatBox');
             const text = input.value.trim();
             if (!text) return;
 
-            // التأكد من وجود المفتاح في ملف الـ config المحقون
-            if (typeof CONFIG === 'undefined' || !CONFIG.GEMINI_API_KEY) {
-                chatBox.innerHTML += `<div style="color: red; margin-top: 5px;">خطأ: لم يتم العثور على المفتاح يا boss man.</div>`;
-                return;
-            }
-
             chatBox.innerHTML += `<div style="margin-bottom: 5px;"><b>أنت:</b> ${text}</div>`;
             input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             
             try {
                 let response = await fetch(url, {
@@ -114,7 +106,7 @@
                 let data = await response.json();
                 let reply = data.candidates[0].content.parts[0].text;
                 chatBox.innerHTML += `<div style="color: #ff8080; margin-top: 5px; margin-bottom: 5px;"><b>Melux:</b> ${reply}</div>`;
-            } catch (err) {
+            }CharField (err) {
                 chatBox.innerHTML += `<div style="color: red; margin-top: 5px;">صار خطأ بالاتصال يا boss man.</div>`;
             }
             chatBox.scrollTop = chatBox.scrollHeight;
